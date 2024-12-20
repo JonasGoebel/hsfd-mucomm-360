@@ -6,54 +6,17 @@ import os
 import ssl
 import uuid
 
-import cv2
 from aiohttp import web
-from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
-from aiortc.contrib.media import (
-    MediaBlackhole,
-    MediaPlayer,
-    MediaRecorder,
-    MediaRelay,
-)
-from av import VideoFrame
+from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc.contrib.media import MediaRelay
 
-from fractions import Fraction
+from VideoCameraTrack import VideoCameraTrack
 
 ROOT = os.path.dirname(__file__)
 
 logger = logging.getLogger("pc")
 pcs = set()
 relay = MediaRelay()
-
-
-class VideoCameraTrack(MediaStreamTrack):
-    """
-    A video stream track that transforms frames from an another track.
-    """
-
-    kind = "video"
-
-    def __init__(self, video_path):
-        super().__init__()  # don't forget this!
-
-        self.cap = cv2.VideoCapture(video_path)
-        self.time_base = Fraction(1, 30)
-
-    async def recv(self):
-        await asyncio.sleep(1 / 30)
-
-        ret, frame = self.cap.read()
-        if not ret:
-            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)  # Restart the video
-            ret, frame = self.cap.read()
-
-        if not ret:
-            raise Exception("Unable to read video frame!")
-
-        # convert the frame for WebRTC
-        video_frame = VideoFrame.from_ndarray(frame, format="bgr24")
-        video_frame.pts, video_frame.time_base = self.time_base, Fraction(1, 30)
-        return video_frame
 
 
 async def index(request):
@@ -90,7 +53,8 @@ async def offer(request):
             print("CONNECTED")
 
     try:
-        track = VideoCameraTrack(video_path="../assets/Netlab1.mp4")
+        # track = VideoCameraTrack(video_path="../assets/Netlab1.mp4")
+        track = VideoCameraTrack(video_src=4)
         pc.addTrack(track)
     except Exception as e:
         print("Error adding camera track")
