@@ -105,14 +105,15 @@ function start() {
     };
 
     // acquire media and start negociation.
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-        stream.getTracks().forEach((track) => {
-            pc.addTrack(track, stream);
-        });
-        return negotiate();
-    }, (err) => {
-        alert('Could not acquire media: ' + err);
-    });
+    // navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    //     stream.getTracks().forEach((track) => {
+    //         pc.addTrack(track, stream);
+    //     });
+    //     return negotiate();
+    // }, (err) => {
+    //     alert('Could not acquire media: ' + err);
+    // });
+    negotiate();
 
     document.getElementById('stop').style.display = 'inline-block';
 }

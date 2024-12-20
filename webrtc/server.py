@@ -79,20 +79,6 @@ async def offer(request):
 
     log_info("Created for %s", request.remote)
 
-    # prepare local media
-    # player = MediaPlayer(os.path.join(ROOT, "demo-instruct.wav"))
-    # if args.record_to:
-        # recorder = MediaRecorder(args.record_to)
-    # else:
-    # recorder = MediaBlackhole()
-
-    @pc.on("datachannel")
-    def on_datachannel(channel):
-        @channel.on("message")
-        def on_message(message):
-            if isinstance(message, str) and message.startswith("ping"):
-                channel.send("pong" + message[4:])
-
     @pc.on("connectionstatechange")
     async def on_connectionstatechange():
         log_info("Connection state is %s", pc.connectionState)
@@ -103,16 +89,15 @@ async def offer(request):
         if pc.connectionState == "connected":
             print("CONNECTED")
 
-    # @TODO handle video track to client without needing a video track from the client
-    @pc.on("track")
-    def on_track(track):
-        log_info("Track %s received", track.kind)
-
-        pc.addTrack(VideoCameraTrack(video_path="../assets/Netlab1.mp4"))
+    try:
+        track = VideoCameraTrack(video_path="../assets/Netlab1.mp4")
+        pc.addTrack(track)
+    except Exception as e:
+        print("Error adding camera track")
+        print(e)
 
     # handle offer
     await pc.setRemoteDescription(offer)
-    # await recorder.start()
 
     # send answer
     answer = await pc.createAnswer()
