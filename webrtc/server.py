@@ -9,6 +9,7 @@ import uuid
 from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaRelay
+import aiohttp_cors
 
 from VideoCameraTrack import VideoCameraTrack
 
@@ -119,6 +120,18 @@ if __name__ == "__main__":
     app.router.add_get("/", index)
     app.router.add_get("/client.js", javascript)
     app.router.add_post("/offer", offer)
+    
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*"
+        )
+    })
+    
+    for route in list(app.router.routes()):
+        cors.add(route)
+    
     web.run_app(
         app,
         access_log=None,
