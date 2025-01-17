@@ -43,24 +43,27 @@ const App = () => {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <WebRtcConnection video={video} setVideo={setVideo} />
-      <Canvas
-        camera={{
-          fov: 75,
-          aspect: window.innerWidth / window.innerHeight,
-          near: 0.25,
-          far: 10,
-          position: [0, 0, 0.5],
-        }}
-      >
-        <React.Suspense fallback={null}>
-          <VideoSphere texture={texture} />
-        </React.Suspense>
-        <OrbitControls
-          enableZoom={false}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={-Math.PI / 2}
-        />
-      </Canvas>
+
+      {video && (
+        <Canvas
+          camera={{
+            fov: 75,
+            aspect: window.innerWidth / window.innerHeight,
+            near: 0.25,
+            far: 10,
+            position: [0, 0, 0.5],
+          }}
+        >
+          <React.Suspense fallback={null}>
+            <VideoSphere texture={texture} />
+          </React.Suspense>
+          <OrbitControls
+            enableZoom={false}
+            maxPolarAngle={Math.PI / 2}
+            minPolarAngle={-Math.PI / 2}
+          />
+        </Canvas>
+      )}
     </div>
   );
 };

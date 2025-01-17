@@ -214,6 +214,10 @@ const WebRtcConnection = ({video, setVideo}) => {
         setTimeout(() => {
             pc.close();
         }, 500);
+
+        // remove video frame (hide big black box)
+        setVideo(undefined)
+        setPc(undefined)
     }
 
     function sdpFilterCodec(kind, codec, realSdp) {
@@ -279,7 +283,7 @@ const WebRtcConnection = ({video, setVideo}) => {
 
     return (
         <div>
-            {pc === undefined && <button id="start" onClick={() => start()}>Start</button>}
+            {pc === undefined && <button id="start" onClick={() => start()}>Connect to 360° Camera</button>}
             {pc !== undefined && (<button id="stop" onClick={() => stop()}>Stop</button>)}
         </div>
     )
