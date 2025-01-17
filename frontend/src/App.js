@@ -2,27 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import panoVideo from './assets/Netlab1.mp4'
+import WebRtcConnection from './WebRtcConnection.jsx';
 
-const VideoSphere = () => {
-  const [texture, setTexture] = useState(null);
-  const [video] = useState(() => {
-    const vid = document.createElement("video");
-    vid.src = panoVideo;
-    vid.crossOrigin = "anonymous";
-    vid.loop = true;
-    vid.muted = true;
-    vid.playsInline = true;
-    return vid;
-  });
-
-  useEffect(() => {
-    video.play();
-    const vidTexture = new THREE.VideoTexture(video);
-    vidTexture.colorSpace = THREE.SRGBColorSpace;
-    setTexture(vidTexture);
-  }, [video]);
-
+const VideoSphere = ({texture}) => {
   return (
     texture && (
       <mesh>
@@ -34,8 +16,33 @@ const VideoSphere = () => {
 };
 
 const App = () => {
+
+  // const videoRef = useRef(null);
+
+  const [texture, setTexture] = useState(null);
+  const [video, setVideo] = useState();
+  // const [video] = useState(() => {
+  //   const vid = document.createElement("video");
+  //   vid.src = panoVideo;
+  //   vid.crossOrigin = "anonymous";
+  //   vid.loop = true;
+  //   vid.muted = true;
+  //   vid.playsInline = true;
+  //   return vid;
+  // });
+
+  useEffect(() => {
+    if(video === undefined) return
+
+    video.play();
+    const vidTexture = new THREE.VideoTexture(video);
+    vidTexture.colorSpace = THREE.SRGBColorSpace;
+    setTexture(vidTexture);
+  }, [video]);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
+      <WebRtcConnection video={video} setVideo={setVideo} />
       <Canvas
         camera={{
           fov: 75,
@@ -46,7 +53,7 @@ const App = () => {
         }}
       >
         <React.Suspense fallback={null}>
-          <VideoSphere />
+          <VideoSphere texture={texture} />
         </React.Suspense>
         <OrbitControls
           enableZoom={false}
