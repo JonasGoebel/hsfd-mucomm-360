@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { PointerLockControls } from "@react-three/drei";
 import * as THREE from "three";
 import WebRtcConnection from './WebRtcConnection.jsx';
 
@@ -41,29 +41,29 @@ const App = () => {
   }, [video]);
 
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
-      <WebRtcConnection video={video} setVideo={setVideo} />
+    <div style={{ width: "100%", height: "100%" }}>
+      <div style={{background: 'green', height: '50px'}}>
+        <WebRtcConnection video={video} setVideo={setVideo} />
+      </div>
 
-      {video && (
-        <Canvas
-          camera={{
-            fov: 75,
-            aspect: window.innerWidth / window.innerHeight,
-            near: 0.25,
-            far: 10,
-            position: [0, 0, 0.5],
-          }}
-        >
-          <React.Suspense fallback={null}>
-            <VideoSphere texture={texture} />
-          </React.Suspense>
-          <OrbitControls
-            enableZoom={false}
-            maxPolarAngle={Math.PI / 2}
-            minPolarAngle={-Math.PI / 2}
-          />
-        </Canvas>
-      )}
+      <div style={{width: '100%', height: 'calc(100vh - 50px)'}}>
+        {video && (
+          <Canvas
+            camera={{
+              fov: 75,
+              aspect: window.innerWidth / window.innerHeight,
+              near: 0.25,
+              far: 10,
+              position: [0, 0, 0.5],
+            }}
+          >
+            <React.Suspense fallback={null}>
+              <VideoSphere texture={texture} />
+            </React.Suspense>
+            <PointerLockControls />
+          </Canvas>
+        )}
+      </div>
     </div>
   );
 };
