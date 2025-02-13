@@ -1,0 +1,52 @@
+.container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: #05c46b;
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.navbar h2 {
+  padding: 5px 25px;
+  margin: 0px;
+}
+
+.navbar>.button {
+  margin: 5px;
+
+  border: 1px solid #1e272e;
+  color: 1e272e;
+  padding: 7px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition-duration: 0.4s;
+}
+
+.navbar>.button:hover {
+  background: #1e272e;
+  color: white;
+}
+
+.row {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.box {
+    width: 100%;
+    height: 100%;
+    background: black;
+}

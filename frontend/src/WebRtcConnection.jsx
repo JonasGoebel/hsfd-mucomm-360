@@ -1,6 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import DemoVideo from './assets/Netlab1.mp4'
+import { useVideo } from "./providers/VideoProvider";
 
-const WebRtcConnection = ({video, setVideo}) => {
+const WebRtcConnection = ({isDemo, shouldStartStream, setVideo}) => {
+
+    // const localVideoRef = useRef(null);
+    const videoRef = useVideo()
+
     // get DOM elements
     // let dataChannelLog = document.getElementById('data-channel'),
     // let iceConnectionLog = document.getElementById('ice-connection-state')
@@ -8,6 +14,11 @@ const WebRtcConnection = ({video, setVideo}) => {
     // let signalingLog = document.getElementById('signaling-state')
 
     const [pc, setPc] = useState();
+
+    useEffect(() => {
+        if(shouldStartStream === true) start()
+        else stop()
+    }, [shouldStartStream])
 
     // peer connection
     // let pc = null;
@@ -17,10 +28,19 @@ const WebRtcConnection = ({video, setVideo}) => {
     // let dcInterval = null;
 
     function createPeerConnection() {
+        // const config = {
+        //     sdpSemantics: 'unified-plan',
+        //     iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }]
+        // };
+
         const config = {
-            sdpSemantics: 'unified-plan',
-            iceServers: [{ urls: ['stun:stun.l.google.com:19302'] }]
-        };
+            iceServers: [
+              { urls: "stun:stun.l.google.com:19302" },
+            //   { urls: "turn:your-turn-server.com", username: "user", credential: "password" }
+            ],
+            iceCandidatePoolSize: 10,
+            iceTransportPolicy: "all"
+          };
 
         // if (document.getElementById('use-stun').checked) {
             // config.iceServers = [{ urls: ['stun:stun.l.google.com:19302'] }];
@@ -61,6 +81,7 @@ const WebRtcConnection = ({video, setVideo}) => {
         console.log("PC", pc);
         
         return pc.createOffer({offerToReceiveVideo: true}).then((offer) => {
+            // offer.sdp = offer.sdp.replace(/a=candidate:(.*) UDP 9\d{4} .*/g, "");
             return pc.setLocalDescription(offer);
         }).then(() => {
             // wait for ICE gathering to complete
@@ -92,8 +113,10 @@ const WebRtcConnection = ({video, setVideo}) => {
 
             // console.log("offer.sdp", offer.sdp)
             // document.getElementById('offer-sdp').textContent = offer.sdp;
-            // const hostUrl = 'http://192.168.98.46:8080/offer'
-            const hostUrl = 'http://127.0.0.1:8080/offer'
+            const hostUrl = 'http://192.168.185.46:8080/offer'
+            // const hostUrl = 'http://127.0.0.1:8080/offer'
+            console.log('HostUrl:', hostUrl);
+            
             return fetch(hostUrl, {
                 body: JSON.stringify({
                     sdp: offer.sdp,
@@ -121,9 +144,30 @@ const WebRtcConnection = ({video, setVideo}) => {
 
     const start = () => {
         console.log("Start pressed");
-        
-        let pc = createPeerConnection();
-        setPc(pc)
+
+        if(isDemo) {
+            console.log("Showing demo video");
+            // const vid = document.createElement("video");
+            // vid.src = DemoVideo;
+            // vid.crossOrigin = "anonymous";
+            // vid.loop = true;
+            // vid.muted = true;
+            // vid.playsInline = true;
+            // setVideo(vid)
+
+            if(videoRef.current) {
+                videoRef.current.src = DemoVideo;
+                videoRef.current.crossOrigin = "anonymous";
+                videoRef.current.loop = true;
+                videoRef.current.muted = true;
+                videoRef.current.playsInline = true;
+
+                videoRef.current.play()
+            }
+        } else {
+            let pc = createPeerConnection();
+            setPc(pc)
+        }
 
         // build media constraints.
         // const constraints = {
@@ -175,14 +219,23 @@ const WebRtcConnection = ({video, setVideo}) => {
             
             // video.srcObject = evt.streams[0];
 
-            const vid = document.createElement("video");
-            vid.srcObject = evt.streams[0];
-            vid.crossOrigin = "anonymous";
-            vid.loop = true;
-            vid.muted = true;
-            vid.playsInline = true;
+            // const vid = document.createElement("video");
+            // videoRef.current.srcObject = evt.streams[0];
+            // videoRef.current.crossOrigin = "anonymous";
+            // videoRef.current.loop = true;
+            // videoRef.current.muted = true;
+            // videoRef.current.playsInline = true;
 
-            setVideo(vid)
+            if(videoRef.current) {
+                console.log("Filling Video Stream");
+                videoRef.current.srcObject = evt.streams[0];
+                videoRef.current.crossOrigin = "anonymous";
+                videoRef.current.loop = true;
+                videoRef.current.muted = true;
+                videoRef.current.playsInline = true;
+
+                videoRef.current.play()
+            }
         });
 
         console.log("NEGOTIATE");
@@ -195,6 +248,14 @@ const WebRtcConnection = ({video, setVideo}) => {
 
         // close data channel
         // if (dc) dc.close();
+
+        // replace stream with empty video
+        if(videoRef.current) {
+            const vid = document.createElement("video");
+            videoRef.current = vid;
+        }
+
+        if(pc === undefined) return
 
         // close transceivers
         if (pc.getTransceivers) {
@@ -282,10 +343,13 @@ const WebRtcConnection = ({video, setVideo}) => {
     }
 
     return (
-        <div>
-            {pc === undefined && <button id="start" onClick={() => start()}>Connect to 360° Camera</button>}
-            {pc !== undefined && (<button id="stop" onClick={() => stop()}>Stop</button>)}
-        </div>
+        <>
+        {/* <div style={{display: 'flexbox'}}> */}
+            {/* <h2 style={{margin: '0'}}>360 Camera Stream</h2> */}
+            {/* {pc === undefined && <button id="start" onClick={() => start()}>Connect to 360° Camera</button>} */}
+            {/* {pc !== undefined && (<button id="stop" onClick={() => stop()}>Stop</button>)} */}
+        {/* </div> */}
+        </>
     )
 }
 
