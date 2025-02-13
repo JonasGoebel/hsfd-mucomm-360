@@ -8,7 +8,6 @@ import uuid
 
 from aiohttp import web
 from aiortc import RTCPeerConnection, RTCSessionDescription
-from aiortc.contrib.media import MediaRelay
 import aiohttp_cors
 
 from VideoCameraTrack import VideoCameraTrack
@@ -17,7 +16,6 @@ ROOT = os.path.dirname(__file__)
 
 logger = logging.getLogger("pc")
 pcs = set()
-relay = MediaRelay()
 
 
 async def index(request):
@@ -56,6 +54,7 @@ async def offer(request):
     try:
         # track = VideoCameraTrack(video_path="../assets/Netlab1.mp4")
         track = VideoCameraTrack(video_src=4)
+        # track = VideoCameraTrack(video_src=2)
         pc.addTrack(track)
     except Exception as e:
         print("Error adding camera track")
