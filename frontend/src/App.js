@@ -8,8 +8,7 @@ import RawVideoComponent from "./views/RawVideoComponent.js";
 
 import './App.css'
 
-const NewDesignComponent = () => {
-  // const [texture, setTexture] = useState(null);
+const App = () => {
   const [video, setVideo] = useState();
   const [isDemo, setIsDemo] = useState(false);
   const [shouldStartStream, setShouldStartStream] = useState(false)
@@ -19,15 +18,6 @@ const NewDesignComponent = () => {
     const urlParams = new URLSearchParams(queryString);
     if(urlParams.get('demo') === 'true') setIsDemo(true)
   }, [])
-
-  // useEffect(() => {
-  //   if (!video) return;
-
-  //   video.play();
-  //   const vidTexture = new THREE.VideoTexture(video);
-  //   vidTexture.colorSpace = THREE.SRGBColorSpace;
-  //   setTexture(vidTexture);
-  // }, [video]);
 
   return (
     <VideoProvider>
@@ -49,7 +39,7 @@ const NewDesignComponent = () => {
         </div>
         <div className="row">
           <div className="box">
-            {shouldStartStream && <ThreeSixtyViewComponent /> }
+            <ThreeSixtyViewComponent />
           </div>
           <div className="box">
             {shouldStartStream && <BackViewComponent />}
@@ -60,4 +50,4 @@ const NewDesignComponent = () => {
   )
 }
 
-export default NewDesignComponent
+export default App
